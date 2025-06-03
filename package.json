@@ -1,0 +1,41 @@
+{
+  "name": "abdias-content-generator",
+  "version": "2.0.0",
+  "description": "Générateur de contenu automatique pour Abdias - Marketing et Entrepreneuriat",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "generate": "node src/index.js",
+    "preview": "node src/index.js preview",
+    "preview:mindset": "node src/index.js preview Mindset-Entrepreneur",
+    "preview:story": "node src/index.js preview Story-Personnelle",
+    "preview:tips": "node src/index.js preview Tips-Vente",
+    "preview:success": "node src/index.js preview Success-Story",
+    "preview:analogie": "node src/index.js preview Analogie-Percutante",
+    "test": "node src/index.js preview",
+    "dev": "nodemon src/index.js preview"
+  },
+  "keywords": [
+    "content-generation",
+    "marketing",
+    "entrepreneurship",
+    "automation",
+    "google-sheets",
+    "ai-content"
+  ],
+  "author": "Abdias",
+  "license": "MIT",
+  "dependencies": {
+    "google-spreadsheet": "^4.1.2",
+    "google-auth-library": "^9.4.1",
+    "openai": "^4.20.1",
+    "@anthropic-ai/sdk": "^0.17.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
