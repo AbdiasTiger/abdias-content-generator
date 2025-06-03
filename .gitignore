@@ -1,0 +1,11 @@
+# Fichiers secrets à ne jamais publier
+.env
+.env.local
+.env.production
+*.log
+node_modules/
+config/secrets.js
+
+# Clés API - NE JAMAIS COMMITTER
+google-service-account.json
+api-keys.js
