@@ -1,0 +1,47 @@
+name: Génération Contenu Abdias
+
+# Déclenchement automatique chaque jour à 8h (GMT)
+on:
+  schedule:
+    - cron: '0 8 * * *'  # 8h UTC = 9h France (hiver) / 10h France (été)
+  
+  # Permet aussi de lancer manuellement pour tester
+  workflow_dispatch:
+
+jobs:
+  generate-content:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Récupérer le code
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    # 2. Installer Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    # 3. Installer les dépendances
+    - name: Install dependencies
+      run: npm install
+    
+    # 4. Générer le contenu
+    - name: Generate content
+      env:
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+        GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+      run: |
+        echo "🚀 Début génération contenu Abdias..."
+        npm run generate
+        echo "✅ Génération terminée !"
+    
+    # 5. Log du résultat
+    - name: Show result
+      run: |
+        echo "📊 Contenu généré avec succès à $(date)"
+        echo "🎯 Prochaine génération dans 24h"
