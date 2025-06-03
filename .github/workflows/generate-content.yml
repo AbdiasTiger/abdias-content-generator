@@ -1,47 +1,53 @@
 name: Génération Contenu Abdias
 
-# Déclenchement automatique chaque jour à 8h (GMT)
 on:
   schedule:
-    - cron: '0 8 * * *'  # 8h UTC = 9h France (hiver) / 10h France (été)
-  
-  # Permet aussi de lancer manuellement pour tester
-  workflow_dispatch:
+    # Exécute tous les jours à 8h du matin (UTC)
+    # Pour 8h heure locale au Bénin (WAT = UTC+1), utiliser 7h UTC
+    - cron: '0 7 * * *'
+  workflow_dispatch: # Permet l'exécution manuelle pour tester
 
 jobs:
   generate-content:
     runs-on: ubuntu-latest
     
     steps:
-    # 1. Récupérer le code
     - name: Checkout repository
-      uses: actions/checkout@v3
-    
-    # 2. Installer Node.js
+      uses: actions/checkout@v4
+      
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
-    
-    # 3. Installer les dépendances
+        
+    - name: Clean npm cache
+      run: npm cache clean --force
+      
+    - name: Remove package-lock.json
+      run: rm -f package-lock.json
+      
     - name: Install dependencies
-      run: npm install
-    
-    # 4. Générer le contenu
-    - name: Generate content
-      env:
-        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
-        GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
       run: |
-        echo "🚀 Début génération contenu Abdias..."
-        npm run generate
-        echo "✅ Génération terminée !"
-    
-    # 5. Log du résultat
+        npm install --no-package-lock
+        npm audit fix --force
+      
+    - name: Create credentials file
+      run: |
+        echo '${{ secrets.GOOGLE_CREDENTIALS }}' > credentials.json
+        
+    - name: Create .env file
+      run: |
+        echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> .env
+        echo "GOOGLE_SERVICE_ACCOUNT_EMAIL=${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}" >> .env
+        echo "GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }}" >> .env
+        echo "GOOGLE_SHEETS_ID=${{ secrets.GOOGLE_SHEETS_ID }}" >> .env
+        echo "POSTS_PER_DAY=5" >> .env
+        
+    - name: Generate content
+      run: npm run generate
+      
     - name: Show result
       run: |
-        echo "📊 Contenu généré avec succès à $(date)"
-        echo "🎯 Prochaine génération dans 24h"
+        echo "✅ Génération de contenu terminée"
+        echo "📊 Vérifiez votre Google Sheets pour les nouveaux contenus"
